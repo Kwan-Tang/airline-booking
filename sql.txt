@@ -1,0 +1,12 @@
+SELECT
+	p.fName as first_name,
+	p.lName as last_name,
+	p.gender as gender,
+	p.age as age,
+	concat(a.city,', ',a.country,' (',a.airport_code,')') as origin,
+	concat(ap.city,', ',ap.country,' (',ap.airport_code,')') as destination,
+	f.duration as duration
+FROM flights f
+JOIN airports a on f.origin_id= a.id
+JOIN airports ap on f.destination_id = ap.id
+JOIN passengers p on p.flight_id = f.id
