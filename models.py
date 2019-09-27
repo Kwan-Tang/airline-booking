@@ -8,6 +8,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = config.uri
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy()
 db.init_app(app)
+engine = db.create_engine(config.uri,{})
+meta = db.MetaData(bind=engine,reflect=True)
 
 class Flight(db.Model):
     __tablename__="flights"
@@ -65,6 +67,12 @@ class Airport(db.Model):
         db.session.commit()
 
 def main():
+    passengers = meta.tables['passengers']
+    flights = meta.tables['flights']
+    airports = meta.tables['airports']
+    passengers.drop()
+    flights.drop()
+    airports.drop()
     db.create_all()
     Airport.preload_airports()
     Flight.preload_flights()

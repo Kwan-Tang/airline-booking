@@ -5,14 +5,14 @@
 {% endblock %}
 
 {% block body %}
-  <h1>Passengers details</h1>
-  <ul>
-    {% for flight in flights %}
-      <li>
-        {{flight.origin_id}}, {{flight.destination_id}}
-      </li>
-    {% else %}
-      No Passenger.
-    {% endfor %}
-  </ul>
+  <h1>Welcome to ImagineAir!</h1>
+  <h3>Please select a flight to book.</h3>
+  <br>
+  <div>
+    <select class="form-control" name="flight_id">
+      {%for flight in flights%}
+        <option value="{{flight.id}}" > {{flight.origin}} to {{flight.destination}} with a duration of {{flight.duration}} minutes.</option>
+      {% endfor %}
+    </select>
+  </div>
 {% endblock %}
