@@ -8,11 +8,44 @@
   <h1>Welcome to ImagineAir!</h1>
   <h3>Please select a flight to book.</h3>
   <br>
-  <div>
-    <select class="form-control" name="flight_id">
-      {%for flight in flights%}
-        <option value="{{flight.id}}" > {{flight.origin}} to {{flight.destination}} with a duration of {{flight.duration}} minutes.</option>
-      {% endfor %}
-    </select>
-  </div>
+  <form action="{{url_for('book')}}" method="post">
+    <div class="form-group">
+      <select class="form-control" name="flight_id">
+      <option disabled selected value> -- Please choose your flight -- </option>
+        {%for flight in flights%}
+          <option value="{{flight.id}}">{{flight.origin}} to {{flight.destination}} with a duration of {{flight.duration}} minutes.</option>
+        {% endfor %}
+      </select>
+    </div>
+    <br>
+    <div class="form-group">
+      <input class="form-control" name="first_name" placeholder=" Passenger First Name ">
+    </div>
+    <br>
+    <div class="form-group">
+      <input class="form-control" name="last_name" placeholder=" Passenger Last Name ">
+    </div>
+    <br>
+    <div class="form-group">
+      <select class="form-control" name="gender">
+        <option disabled selected value> -- Please choose your gender -- </option>
+        <option value="M">Male</option>
+        <option value="F">Female</option>
+      </select>
+    </div>
+    <br>
+    <div class="form-group">
+      <select class="form-control" name="age">
+        <option disabled selected value>  -- Please choose your age -- </option>
+        {% for n in range(101)%}
+          <option value="{{n}}">{{n}}</option>
+        {% endfor %}
+      </select>
+    </div>
+    <br>
+    <div class='form-group'>
+      <button class=btn btn-primary">Book a flight!</button>
+    </div>
+    <br>
+  </form>
 {% endblock %}

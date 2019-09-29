@@ -1,5 +1,5 @@
 from models import *
-from flask import Flask,render_template
+from flask import Flask,render_template,request
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import functions
 
@@ -16,3 +16,13 @@ def index():
                                 ,functions.concat(airport_destination.city,", ",airport_destination.country," (",airport_destination.airport_code,")").label("destination") \
                                 ,Flight.duration).filter(Flight.origin_id==airport_origin.id).filter(Flight.destination_id==airport_destination.id).all()
     return render_template("index.html",flights=flights)
+
+@app.route("/book",methods=["POST"])
+def book():
+    flight_id = request.form.get("flight_id")
+    first_name = request.form.get("first_name")
+    last_name = request.form.get("last_name")
+    gender = request.form.get("gender")
+    age = request.form.get("age")
+    print(f"Passenger {first_name} {last_name} {gender} {age} booked to flight id {flight_id}.")
+    return render_template("success.html")
