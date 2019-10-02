@@ -5,9 +5,9 @@
 {% endblock %}
 
 {% block body %}
-  <h1>Flight {{flight.id}}</h1>
-  <h3>Origin: {{flight.origin_id}}</h2>
-  <h3>Destination: {{flight.destination_id}}</h2>
+  <h1>Flight {{flight[:][0]}}</h1>
+  <h3>Origin: {{flight[1]}}</h2>
+  <h3>Destination: {{flight[2]}}</h2>
   <h3>Duration: {{flight.duration}}</h2>
   <br>
   <h1>Passenger details</h1>

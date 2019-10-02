@@ -20,11 +20,12 @@ def book():
     last_name = request.form.get("last_name")
     gender = request.form.get("gender")
     age = request.form.get("age")
-    print(f"Passenger {first_name} {last_name} {gender} {age} booked to flight id {flight_id}.")
     flight_info = Flight.query.get(flight_id)
     if not flight_info:
         return render_template("error.html",message="The flight does not exist!")
+    flight_info.add_passenger(first_name,last_name,gender,age)
     return render_template("success.html")
+
 
 @app.route("/flights")
 def flights():
@@ -34,8 +35,16 @@ def flights():
 
 @app.route("/flights/<int:flight_id>")
 def flight(flight_id):
-    flight = Flight.query.get(flight_id)
-    return render_template("flight.html",flight=flight,passengers=flight.passengers)
+    airport_origin = aliased(Airport)
+    airport_destination = aliased(Airport)
+    flight_info = Flight.query.get(flight_id)
+    flight  = db.session.query(Flight.id
+                                ,functions.concat(airport_origin.city," (",airport_origin.airport_code,")").label('origin')
+                                ,functions.concat(airport_destination.city," (",airport_destination.airport_code,")").label('destination')
+                                ,functions.concat(Flight.duration, " minutes").label('duration'))\
+                                .filter(Flight.origin_id==airport_origin.id).filter(Flight.destination_id==airport_destination.id).filter(Flight.id==flight_id).all()
+    return render_template("flight.html",flight=flight[0],passengers=flight_info.passengers)
+
 
 def retrieve_flights():
     airport_origin = aliased(Airport)

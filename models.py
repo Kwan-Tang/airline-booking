@@ -19,8 +19,8 @@ class Flight(db.Model):
     duration = db.Column(db.String,nullable=False)
     passengers = db.relationship("Passenger",backref="flight",lazy=True)
 
-    def add_passenger(self,name):
-        p = Passenger(name=name,flight_id=self.id)
+    def add_passenger(self,fname,lname,gender,age):
+        p = Passenger(fname=fname,lname=lname,gender=gender,age=age,flight_id=self.id)
         db.session.add(p)
         db.session.commit()
 
