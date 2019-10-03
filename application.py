@@ -1,5 +1,5 @@
 from models import *
-from flask import Flask,render_template,request
+from flask import Flask,render_template,request,jsonify
 from sqlalchemy.orm import aliased
 from sqlalchemy.sql import functions
 
@@ -26,7 +26,6 @@ def book():
     flight_info.add_passenger(first_name,last_name,gender,age)
     return render_template("success.html")
 
-
 @app.route("/flights")
 def flights():
     flights = retrieve_flights()
@@ -45,7 +44,6 @@ def flight(flight_id):
                                 .filter(Flight.origin_id==airport_origin.id).filter(Flight.destination_id==airport_destination.id).filter(Flight.id==flight_id).all()
     return render_template("flight.html",flight=flight[0],passengers=flight_info.passengers)
 
-
 def retrieve_flights():
     airport_origin = aliased(Airport)
     airport_destination = aliased(Airport)
@@ -53,3 +51,26 @@ def retrieve_flights():
                                 ,functions.concat(airport_destination.city,", ",airport_destination.country," (",airport_destination.airport_code,")").label("destination") \
                                 ,Flight.duration).filter(Flight.origin_id==airport_origin.id).filter(Flight.destination_id==airport_destination.id).all()
     return flights
+
+@app.route("/api/flights/<int:flight_id>")
+def flight_api(flight_id):
+    airport_origin = aliased(Airport)
+    airport_destination = aliased(Airport)
+    flight = Flight.query.get(flight_id)
+    flight_info = db.session.query(Flight.id,airport_origin.city.label('origin'),airport_origin.airport_code.label('origin_code')
+                                    ,airport_destination.city.label('destination'),airport_destination.airport_code.label('destination_code'),Flight.duration)\
+                                    .filter(Flight.origin_id==airport_origin.id)\
+                                    .filter(Flight.destination_id==airport_destination.id)\
+                                    .filter(Flight.id==flight_id).all()
+    if flight is None:
+        return jsonify({"error":"Invalid flight_id"}),422
+    passengers = flight.passengers
+    names = []
+    for passenger in passengers:
+        names.append({'first_name':passenger.fname,'last_name':passenger.lname,'gender':passenger.gender,'age':passenger.age})
+    return jsonify({
+                    "origin":[{"city":flight_info[0][1],"code":flight_info[0][2]}]
+                    ,"destination":[{"city":flight_info[0][3],"code":flight_info[0][4]}]
+                    ,"duration":flight_info[0][5]
+                    ,"passengers":names
+    })
