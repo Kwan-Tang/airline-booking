@@ -29,10 +29,14 @@ def book():
 @app.route("/flights")
 def flights():
     flights = retrieve_flights()
-
     return render_template("flights.html",flights=flights)
 
-@app.route("/flights/<int:flight_id>")
+@app.route("/airports")
+def airports():
+    airports = Airport.query.all()
+    return render_template("airports.html",airports=airports)
+
+@app.route("/flight/<int:flight_id>")
 def flight(flight_id):
     airport_origin = aliased(Airport)
     airport_destination = aliased(Airport)
@@ -54,14 +58,7 @@ def retrieve_flights():
 
 @app.route("/api/flights/<int:flight_id>")
 def flight_api(flight_id):
-    airport_origin = aliased(Airport)
-    airport_destination = aliased(Airport)
     flight = Flight.query.get(flight_id)
-    flight_info = db.session.query(Flight.id,airport_origin.city.label('origin'),airport_origin.airport_code.label('origin_code')
-                                    ,airport_destination.city.label('destination'),airport_destination.airport_code.label('destination_code'),Flight.duration)\
-                                    .filter(Flight.origin_id==airport_origin.id)\
-                                    .filter(Flight.destination_id==airport_destination.id)\
-                                    .filter(Flight.id==flight_id).all()
     if flight is None:
         return jsonify({"error":"Invalid flight_id"}),422
     passengers = flight.passengers
@@ -69,8 +66,9 @@ def flight_api(flight_id):
     for passenger in passengers:
         names.append({'first_name':passenger.fname,'last_name':passenger.lname,'gender':passenger.gender,'age':passenger.age})
     return jsonify({
-                    "origin":[{"city":flight_info[0][1],"code":flight_info[0][2]}]
-                    ,"destination":[{"city":flight_info[0][3],"code":flight_info[0][4]}]
-                    ,"duration":flight_info[0][5]
+                    "id":flight.id
+                    ,"origin":[{"city":flight.airport_origin.city,"code":flight.airport_origin.airport_code}]
+                    ,"destination":[{"city":flight.airport_destination.city,"code":flight.airport_destination.airport_code}]
+                    ,"duration":flight.duration
                     ,"passengers":names
     })

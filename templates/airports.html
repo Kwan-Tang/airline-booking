@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block title %}
+  Airports
+{% endblock %}
+
+{% block body %}
+  <h1>All Airports</h1>
+  <ul>
+    {% for airport in airports %}
+      <li>{{airport.city}}, {{airport.country}} ({{airport.airport_code}})</li>
+    {% endfor %}
+  </ul>
+{% endblock %}
