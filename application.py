@@ -36,7 +36,7 @@ def airports():
     airports = Airport.query.all()
     return render_template("airports.html",airports=airports)
 
-@app.route("/flight/<int:flight_id>")
+@app.route("/flights/<int:flight_id>")
 def flight(flight_id):
     airport_origin = aliased(Airport)
     airport_destination = aliased(Airport)
